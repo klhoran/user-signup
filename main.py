@@ -15,11 +15,101 @@
 # limitations under the License.
 #
 import webapp2
+import re
+
+form = """
+<form method = "post">
+<div align="center">
+    <h1>User Signup</h1>
+    <table>
+        <tr>
+            <td>Username</td>
+            <td><input type = "text" name = "username" value = ""></td>
+            <td style="color: red">%(er_username)s</td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type = "password" name = "password" value = ""></td>
+            <td style="color: red">%(er_password)s</td>
+        </tr>
+        <tr>
+            <td>Retype Password</td>
+            <td><input type = "password" name = "verify" value = ""></td>
+            <td style="color: red">%(er_verify)s</td>
+        </tr>
+        <tr>
+            <td>Email (optional)</td>
+            <td><input type = "email" name = "email"></td>
+            <td style="color: red">%(er_email)s</td>
+        </tr>
+    </table>
+    <br>
+    <input type = "Submit">
+</div>
+</form>
+"""
+
 
 class MainHandler(webapp2.RequestHandler):
+
+    def write_form(self, er_username="", er_password="", er_verify="", er_email=""):
+
+
+        self.response.out.write(form%{"er_username": er_username, "er_password": er_password, "er_verify": er_verify, "er_email": er_email})
+
     def get(self):
-        self.response.write('Hello world!')
+        self.write_form()
+
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+        verify = self.request.get('verify')
+        email = self.request.get('email')
+
+        user_name = v_username(username)
+        pass_word = v_password(password)
+        e_mail = v_email(email)
+
+        er_username = ""
+        er_password = ""
+        er_verify = ""
+        er_email = ""
+
+
+        if not user_name:
+            er_username = "Not a valid username"
+
+        if not pass_word:
+            er_password = "Not a valid password"
+
+        if not e_mail:
+            er_mail = "Not a valid email"
+
+
+        if not (user_name and pass_word and e_mail):
+            self.write_form()
+        else:
+            self.response.out.write("Welcome, " + username)
+
+
+
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+def v_username(username):
+    return username and USER_RE.match(username)
+
+PASS_RE = re.compile(r"^.{3,20}$")
+def v_password(password):
+    return password and PASS_RE.match(password)
+
+EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
+def v_email(email):
+    return not email or EMAIL_RE.match(email)
+
+
+
+
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
 ], debug=True)
