@@ -75,20 +75,28 @@ class MainHandler(webapp2.RequestHandler):
         er_password = ""
         er_verify = ""
         er_email = ""
+        error = False
 
 
         if not user_name:
             er_username = "Not a valid username"
+            error = True
 
         if not pass_word:
             er_password = "Not a valid password"
+            error = True
 
         if not e_mail:
-            er_mail = "Not a valid email"
+            er_email = "Not a valid email"
+            error = True
+
+        if password != verify:
+            er_verify = "Passwords do not match"
+            error = True 
 
 
-        if not (user_name and pass_word and e_mail):
-            self.write_form()
+        if error:
+            self.write_form(er_username, er_password, er_verify, er_email)
         else:
             self.response.out.write("Welcome, " + username)
 
