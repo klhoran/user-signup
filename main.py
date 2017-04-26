@@ -24,7 +24,7 @@ form = """
     <table>
         <tr>
             <td>Username</td>
-            <td><input type = "text" name = "username" value = ""></td>
+            <td><input type = "text" name = "username" value = "%(username)s"></td>
             <td style="color: red">%(er_username)s</td>
         </tr>
         <tr>
@@ -39,7 +39,7 @@ form = """
         </tr>
         <tr>
             <td>Email (optional)</td>
-            <td><input type = "email" name = "email"></td>
+            <td><input type = "email" name = "email" value = "%(email)s"></td>
             <td style="color: red">%(er_email)s</td>
         </tr>
     </table>
@@ -52,10 +52,10 @@ form = """
 
 class MainHandler(webapp2.RequestHandler):
 
-    def write_form(self, er_username="", er_password="", er_verify="", er_email=""):
+    def write_form(self, er_username="", er_password="", er_verify="", er_email="", username="", email=""):
 
 
-        self.response.out.write(form%{"er_username": er_username, "er_password": er_password, "er_verify": er_verify, "er_email": er_email})
+        self.response.out.write(form%{"er_username": er_username, "er_password": er_password, "er_verify": er_verify, "er_email": er_email, "username": username, "email": email})
 
     def get(self):
         self.write_form()
@@ -92,13 +92,18 @@ class MainHandler(webapp2.RequestHandler):
 
         if password != verify:
             er_verify = "Passwords do not match"
-            error = True 
+            error = True
 
 
         if error:
-            self.write_form(er_username, er_password, er_verify, er_email)
+            self.write_form(er_username, er_password, er_verify, er_email, username, email)
         else:
-            self.response.out.write("Welcome, " + username)
+            self.redirect("/welcome?name=" + username)
+
+class WelcomeHandler(MainHandler):
+    def get(self):
+        username = self.request.get('username')
+        self.response.out.write("Welcome, " + username)
 
 
 
@@ -120,4 +125,5 @@ def v_email(email):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/welcome', WelcomeHandler),
 ], debug=True)
