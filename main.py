@@ -100,11 +100,11 @@ class MainHandler(webapp2.RequestHandler):
         else:
             self.redirect("/welcome?name=" + username)
 
-class WelcomeHandler(MainHandler):
+
+class WelcomeHandler(webapp2.RequestHandler):
     def get(self):
         username = self.request.get('username')
         self.response.out.write("Welcome, " + username)
-
 
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
