@@ -98,7 +98,7 @@ class MainHandler(webapp2.RequestHandler):
         if error:
             self.write_form(er_username, er_password, er_verify, er_email, username, email)
         else:
-            self.redirect("/welcome?name=" + username)
+            self.redirect("/welcome?username=" + username)
 
 
 class WelcomeHandler(webapp2.RequestHandler):
